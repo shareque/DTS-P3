@@ -1,0 +1,352 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Defect Tracking System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/jquery.mobile.css" />
+    <link href="assets/css/style.css" rel="stylesheet" />
+    <script type="text/javascript" charset="utf-8" src="phonegap-3.1.0.js"></script>
+    <script src="assets/js/jquery.js"></script>
+    <!-- your scripts here -->
+    <script src="assets/js/jquery.mobile.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.btn-dail').on('click', function () {
+                //txtDefectCode
+                code = $('#txtDefectCode').val() + $(this).html();
+                $('#txtDefectCode').val(code);
+            })
+        });
+
+        clearDefectCode = function () {
+            $('#txtDefectCode').val('');
+        }
+        SwitchKeypad = function () {
+            $('#CodePanel').toggle();
+            $('#ListPanel').toggle();
+        }
+        function sendSMS(machineName, defect, operatorName) {
+            //         var currDate = new Date();
+            //         var dateTime = currDate.getDate() + '/' + currDate.getMonth() + '/' + currDate.getFullYear() + ' ' + currDate.getHours() + ':' + currDate.getMinutes() + ':' + currDate.getSeconds();
+            //         var url = "http://api.mvaayoo.com/mvaayooapi/MessageCompose?user=anees.hashmi@yahoo.com:kingarthur&senderID=TEST%20SMS&receipientno=8928821898,9421120402&msgtxt= Machine: " + machineName + ";Defect: " + defect + ";Operator:" + operatorName + ";Date:" + dateTime + ";Roll No.:" + $("#lblRollNo").val() + ";Length:" + (TotalSecond) / 10 + " m&state=2";
+            //         $.getJSON(url);
+        }
+        var machineDate;
+        var TotalSecond;
+        function setMachineTime() {
+            $("#lblRollNo").val($("#txtRollNo").val());
+            $("#lblMachine").text("MX2234 - " + $("#lblRollNo").val());
+            $("#txtRollNo").val("");
+            machineDate = new Date();
+            timerCountdown();
+        }
+        function timerCountdown() {
+
+            setInterval(function () {
+
+                var now = new Date();
+                var difference = Math.floor((now.getTime() - machineDate.getTime()) / 1000);
+                TotalSecond = difference;
+                var seconds = fixIntegers(difference % 60);
+                difference = Math.floor(difference / 60);
+
+                var minutes = fixIntegers(difference % 60);
+                difference = Math.floor(difference / 60);
+
+                var hours = fixIntegers(difference % 24);
+                difference = Math.floor(difference / 24);
+
+                var days = difference;
+
+                $("#lblTimer").html('<i class="fa fa-clock-o"></i> ' + hours + ':' + minutes + ':' + seconds);
+                $("#lblLength").html('<i class="fa fa-film"></i> ' + (TotalSecond) / 10 + " m");
+            }, 1000)
+        }
+
+        function fixIntegers(integer) {
+            if (integer < 0)
+                integer = 0;
+            if (integer < 10)
+                return "0" + integer;
+            return "" + integer;
+        }
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+        }
+        function onBackKeyDown(e) {
+            e.preventDefault();
+        }
+    </script>
+</head>
+<body id="dtsApp">
+    <!-- Login page -->
+    <div data-role="page" id="LoginPage">
+        <div data-role="header" data-position="fixed">
+            <img id="Img1" src="assets/images/companylogo.png" alt="Garware Logo" />
+            <h3>
+                DTS - Process 3</h3>
+        </div>
+        <div role="main" class="ui-content">
+            <h2>
+                Login</h2>
+            <input name="text-basic" id="lblUserId" value="" type="text" placeholder="User Name">
+            <input name="password" id="lblpassword" value="" autocomplete="off" type="password"
+                placeholder="Password">
+            <a class="ui-shadow ui-btn ui-corner-all ui-btn-icon-right ui-icon-carat-r btn-primary"
+                href="#WelcomePage">Submit</a> <a class="ui-shadow ui-btn ui-corner-all ui-btn-icon-right ui-icon-delete btn-danger">
+                    Exit</a>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <h4>
+                ITBees Technologies</h4>
+        </div>
+    </div>
+    <!-- Welcome page -->
+    <div data-role="page" id="WelcomePage">
+        <div data-role="header">
+            <h1>
+                Defect Tracking System</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <ul data-role="listview" data-inset="true" data-divider-theme="b" class="detail">
+                <li data-role="list-divider">Welcome, Amit Kharya</li>
+                <li>Winder Name<span class="ui-li-count">MX2234</span></li>
+                <li>Winder Speed<span class="ui-li-count">300 m/hr</span></li>
+            </ul>
+            <select>
+                <option value="-1">Select Roll No</option>
+                <option value="1">2234</option>
+                <option value="2">3566</option>
+            </select>
+            <fieldset data-role="controlgroup">
+                <legend>Machine Mode:</legend>
+                <input name="radio-choice-b" id="radio-choice-c" value="Production" checked="checked"
+                    type="radio">
+                <label for="radio-choice-c">
+                    Production</label>
+                <input name="radio-choice-b" id="radio-choice-d" value="Trail" type="radio">
+                <label for="radio-choice-d">
+                    Trial</label>
+            </fieldset>
+            <input type="hidden" id="lblRollNo" value="" />
+            <a class="ui-shadow ui-btn ui-corner-all  btn-success btn-large" href="#Dashboard"
+                onclick="setMachineTime();"><i class="fa fa-cog"></i>&nbsp;Start Machine </a>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <h4>
+                ITBees Technologies</h4>
+        </div>
+    </div>
+    <!-- Dashboard page -->
+    <div data-role="page" id="Dashboard">
+        <div data-role="header" data-position="fixed">
+            <label id="lblTimer" class="btn-success ui-corner-all">
+                <i class="fa fa-clock-o"></i> 00:00:00</label>
+            <label id="lblLength" class="btn-success ui-corner-all">
+                <i class="fa fa-film"></i> 0.0 m</label>
+            <h4>
+                MX2234-2234</h4>
+        </div>
+        <div role="main" class="ui-content">
+            <div data-role="tabs" id="tabs">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#DefectReview" data-ajax="false">Defect Review</a></li>
+                        <li><a href="#DefectRegister" data-ajax="false">Register Defect</a></li>
+                        <li><a href="#DefectHistory">Defect History</a></li>
+                    </ul>
+                </div>
+                <div id="DefectReview" class="ui-body-d ui-content">
+                    <ul class="DefectReviewList" data-role="listview">
+                        <li class="btn-danger ui-corner-all"><strong>P1</strong>105(Black Spot) High-Left <span
+                            class="ui-li-count">350m</span><span class="time-lapse"><i class="fa fa-clock-o"></i>
+                                10 seconds to go</span> </li>
+                        <li class="btn-danger ui-corner-all"><strong>P2</strong>008 (Bubbles) Low-Right <span
+                            class="ui-li-count">390m </span></li>
+                        <li class="btn-danger ui-corner-all"><strong>P1</strong>014 (Colour lines) Low-Left
+                            <span class="ui-li-count">420m </span></li>
+                        <li class="btn-warning ui-corner-all"><strong>P1</strong>019 (Core damage) Mid-Center
+                            <span class="ui-li-count">500m </span></li>
+                        <li class="btn-warning ui-corner-all"><strong>P2</strong>105(Black Spot) Low-Left<span
+                            class="ui-li-count"> 650m </span></li>
+                        <li class="btn-warning ui-corner-all"><strong>P2</strong>014 (Colour lines) Low-Left<span
+                            class="ui-li-count"> 710m </span></li>
+                        <li class="btn-success ui-corner-all"><strong>P1</strong>21 (Curling with liner) High-Right
+                            <span class="ui-li-count">760m </span></li>
+                        <li class="btn-success ui-corner-all"><strong>P1</strong>118 (Wrinkle impressions) Low-Right
+                            <span class="ui-li-count">800m </span></li>
+                        <li class="btn-success ui-corner-all"><strong>P1</strong>019 (Core damage) Low-Center<span
+                            class="ui-li-count"> 810m </span></li>
+                        <li class="btn-success ui-corner-all"><strong>P1</strong>008 (Bubbles) Low-Right<span
+                            class="ui-li-count"> 850m </span></li>
+                    </ul>
+                </div>
+                <div id="DefectRegister">
+                    <div id="CodePanel">
+                        <input name="text-basic" id="txtDefectCode" class="input-large bordered" value=""
+                            type="number" disabled="disabled">
+                        <div class="ui-grid-b ui-responsive">
+                            <div class="ui-block-a">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">1</a></div>
+                            <div class="ui-block-b">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">2</a></div>
+                            <div class="ui-block-c">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">3</a></div>
+                            <div class="ui-block-a">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">4</a></div>
+                            <div class="ui-block-b">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">5</a></div>
+                            <div class="ui-block-c">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">6</a></div>
+                            <div class="ui-block-a">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">7</a></div>
+                            <div class="ui-block-b">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">8</a></div>
+                            <div class="ui-block-c">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">9</a></div>
+                            <div class="ui-block-a">
+                                <a href="#" class="ui-btn btn-primary ui-corner-all btn-large btn-dail">0</a></div>
+                            <div class="ui-block-b">
+                                <a href="#" class="ui-btn btn-danger ui-corner-all btn-large" onclick="clearDefectCode();">
+                                    <i class="fa fa-times"></i></a>
+                            </div>
+                        </div>
+                        <a class="ui-btn btn-success ui-corner-all btn-large" onclick="sendSMS('MX2234',$('#txtDefectCode').val(),'Amit Kharya');">
+                            Submit</a>
+                    </div>
+                    <div id="ListPanel" style="display: none;">
+                        <a class="ui-btn btn-teal ui-corner-all btn-large" href="#popupDialog" data-rel="popup"
+                            data-position-to="window" data-transition="pop" onclick="sendSMS('MX2234','Black Spot','Amit Kharya','150');">
+                            Black Spot <span class="ui-li-count">2</span></a> <a class="ui-btn btn-danger ui-corner-all btn-large"
+                                href="#popupDialog" data-rel="popup" data-position-to="window" data-transition="pop"
+                                onclick="sendSMS('MX2234','Flow Mark','Amit Kharya');">Flow Mark</a> <a class="ui-btn btn-danger ui-corner-all btn-large"
+                                    href="#popupDialog" data-rel="popup" data-position-to="window" data-transition="pop"
+                                    onclick="sendSMS('MX2234','Patch Mark','Amit Kharya');">Patch Mark</a>
+                        <a class="ui-btn btn-teal ui-corner-all btn-large" href="#popupDialog" data-rel="popup"
+                            data-position-to="window" data-transition="pop" onclick="sendSMS('MX2234','Rust / Oil / Spray Mark','Amit Kharya');">
+                            Rust / Oil / Spray Mark <span class="ui-li-count">1</span></a> <a class="ui-btn btn-danger ui-corner-all btn-large"
+                                href="#popupDialog" data-rel="popup" data-position-to="window" data-transition="pop"
+                                onclick="sendSMS('MX2234','Scratch / Stretch','Amit Kharya');">Scratch / Stretch</a>
+                        <a class="ui-btn btn-warning ui-corner-all btn-large" href="#popupDialog" data-rel="popup"
+                            data-position-to="window" data-transition="pop" onclick="sendSMS('MX2234','Warpage Line','Amit Kharya');">
+                            Warpage Line <span class="ui-li-count">1</span></a> <a class="ui-btn btn-warning ui-corner-all btn-large"
+                                href="#popupDialog" data-rel="popup" data-position-to="window" data-transition="pop"
+                                onclick="sendSMS('MX2234','Bubble','Amit Kharya');">Bubble</a>
+                        <div data-role="popup" id="popupDialog" data-dismissible="false" style="max-width: 400px;">
+                            <div data-role="header" data-theme="a">
+                                <h1>
+                                    Defect Register</h1>
+                            </div>
+                            <div role="main" class="ui-content">
+                                <h4 class="ui-title">
+                                    Are you sure you want to Register Defect?</h4>
+                                <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline btn-success" data-rel="back"
+                                    data-transition="flow">Yes</a> <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline btn-danger"
+                                        data-rel="back">No</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="DefectHistory" class="ui-body-d ui-content">
+                    <ul class="DefectReviewList" data-role="listview" data-inset="true" data-theme="a" data-count-theme="b">
+                        <li><strong>P1</strong>105(Black Spot) High-Left <span class="ui-li-count">050m</span>
+                        </li>
+                        <li><strong>P1</strong>008 (Bubbles) Low-Right <span class="ui-li-count">090m </span>
+                        </li>
+                        <li><strong>P1</strong>014 (Colour lines) Low-Left <span class="ui-li-count">120m </span>
+                        </li>
+                        <li><strong>P2</strong>019 (Core damage) Mid-Center <span class="ui-li-count">150m </span>
+                        </li>
+                        <li><strong>P1</strong>105(Black Spot) Low-Left<span class="ui-li-count"> 180m </span>
+                        </li>
+                        <li><strong>P2</strong>014 (Colour lines) Low-Left<span class="ui-li-count"> 210m </span>
+                        </li>
+                        <li><strong>P2</strong>21 (Curling with liner) High-Right <span class="ui-li-count">
+                            260m </span></li>
+                        <li><strong>P1</strong>118 (Wrinkle impressions) Low-Right <span class="ui-li-count">
+                            300m </span></li>
+                        <li><strong>P1</strong>105(Black Spot) High-Left<span class="ui-li-count"> 350m </span>
+                        </li>
+                        <li><strong>P1</strong>008 (Bubbles) Low-Right<span class="ui-li-count"> 390m </span>
+                        </li>
+                        
+                        <li><strong>P2</strong>014 (Colour lines) Low-Left <span class="ui-li-count">420m </span>
+                        </li>
+                        <li><strong>P1</strong>019 (Core damage) Mid-Center <span class="ui-li-count">500m </span>
+                        </li>
+                        <li><strong>P1</strong>105(Black Spot) Low-Left<span class="ui-li-count"> 650m </span>
+                        </li>
+                        <li><strong>P2</strong>014 (Colour lines) Low-Left<span class="ui-li-count"> 710m </span>
+                        </li>
+                        <li><strong>P1</strong>21 (Curling with liner) High-Right <span class="ui-li-count">
+                            760m </span></li>
+                        <li><strong>P1</strong>118 (Wrinkle impressions) Low-Right <span class="ui-li-count">
+                            800m </span></li>
+                        <li class="highlight1"><strong>P3</strong>019 (Core damage) Low-Center<span class="ui-li-count"> 810m </span>
+                        </li>
+                        <li><strong>P1</strong>008 (Bubbles) Low-Right<span class="ui-li-count"> 850m </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <a href="#WelcomePage" class="ui-btn ui-btn-left  btn-danger ui-corner-all " title="Stop Machine">
+                <i class="fa fa-stop"></i></a><a href="#" id="btnPause" class="ui-btn ui-btn-left  btn-warning ui-corner-all "
+                    title="Puase"><i class="fa fa-pause"></i></a><a href="#" id="btnSwitchKeypad" class="ui-btn ui-btn-left   btn-primary ui-corner-all"
+                        onclick="SwitchKeypad();"><i class="fa fa-keyboard-o"></i></a><a href="#LoginPage"
+                            class="ui-btn ui-btn-right  btn-warning ui-corner-all" title="Logoff">Amit K. <i
+                                class="fa fa-power-off"></i></a>
+        </div>
+        <!-- /footer -->
+    </div>
+    <!-- DefectList page -->
+    <div data-role="page" id="DefectList">
+        <div data-role="header">
+            <a href="#" class="ui-btn-left ui-btn ui-btn-inline btn-info ui-icon-back ui-btn-icon-left ui-corner-all"
+                data-rel="back">Back</a>
+            <h1>
+                Defect Tracking System</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div data-role="collapsibleset" data-inset="true" data-collapsed-icon="carat-r" data-expanded-icon="carat-d"
+                class="defectList">
+                <div data-role="collapsible">
+                    <h3>
+                        Black Spot <span class="ui-li-count">2</span></h3>
+                    <ul data-role="listview" data-inset="false" data-count-theme="b">
+                        <li><i class="fa fa-user"></i>Amit K. <i class="fa fa-clock-o"></i>09/03/2014 12:13:25<span
+                            class="ui-li-count"><i class="fa fa-film"></i> 515.5 m</span></li>
+                        <li><i class="fa fa-user"></i>Amit K. <i class="fa fa-clock-o"></i>09/03/2014 10:34:19<span
+                            class="ui-li-count"><i class="fa fa-film"></i> 364.9 m</span></li>
+                    </ul>
+                </div>
+                <div data-role="collapsible">
+                    <h3>
+                        Rust / Oil / Spray Mark <span class="ui-li-count">1</span></h3>
+                    <ul data-role="listview" data-inset="false" data-count-theme="b">
+                        <li><i class="fa fa-user"></i>Amit K. <i class="fa fa-clock-o"></i>09/03/2014 13:23:02<span
+                            class="ui-li-count"><i class="fa fa-film"></i> 736.0 m</span></li>
+                    </ul>
+                </div>
+                <div data-role="collapsible">
+                    <h3>
+                        Warpage Line <span class="ui-li-count">1</span></h3>
+                    <ul data-role="listview" data-inset="false" data-count-theme="b">
+                        <li><i class="fa fa-user"></i>Amit K. <i class="fa fa-clock-o"></i>09/03/2014 11:33:02<span
+                            class="ui-li-count"><i class="fa fa-film"></i> 448.3 m</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /content -->
+        <div data-role="footer" data-position="fixed">
+            <h4>
+                ITBees Technologies</h4>
+        </div>
+        <!-- /footer -->
+    </div>
+    <!-- /page -->
+</body>
